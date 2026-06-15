@@ -12,10 +12,6 @@ workflows:
         - ~/.gradle/wrapper
 
     scripts:
-      - name: Checkout
-        script: |
-          git clone $CM_REPO_URL .
-      
       - name: Make gradlew executable
         script: |
           chmod +x ./gradlew
