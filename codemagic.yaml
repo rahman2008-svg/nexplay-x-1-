@@ -1,38 +1,33 @@
 workflows:
   nexplay_x_build:
-    name: NexPlay X Production Build
+    name: NexPlay X CI Build
     max_build_duration: 60
 
     environment:
       java: 17
-      vars:
-        GRADLE_OPTS: "-Dorg.gradle.daemon=false"
 
     scripts:
-      - name: Update system
-        script: |
-          apt-get update
+      - name: Show project files
+        script: ls -la
 
-      - name: Install Gradle (fallback)
+      - name: Make gradlew executable
         script: |
-          apt-get install -y gradle
+          if [ -f "./gradlew" ]; then
+            chmod +x gradlew
+          fi
 
       - name: Setup local.properties
         script: |
           echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
 
-      - name: Check project files
-        script: |
-          ls -la
-
-      - name: Build project (safe mode)
+      - name: Build APK
         script: |
           if [ -f "./gradlew" ]; then
-            chmod +x gradlew
             ./gradlew clean
             ./gradlew assembleRelease
           else
-            gradle assembleRelease
+            echo "ERROR: gradlew not found! Please add Gradle wrapper"
+            exit 1
           fi
 
     artifacts:
