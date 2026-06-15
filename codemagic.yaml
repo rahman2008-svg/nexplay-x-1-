@@ -1,0 +1,19 @@
+workflows:
+  nexplay_x_build:
+    name: NexPlay X Build
+
+    environment:
+      java: 17
+
+    scripts:
+      - name: Setup
+        script: echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
+
+      - name: Make gradlew executable
+        script: chmod +x gradlew
+
+      - name: Build APK
+        script: ./gradlew assembleRelease
+
+    artifacts:
+      - app/build/outputs/**/*.apk
