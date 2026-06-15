@@ -1,45 +1,36 @@
 workflows:
-  nexplay_x_debug:
-    name: NexPlay X Debug Build (Stable)
-
+  nexplay-x-debug:
+    name: NexPlay X Debug Build
     max_build_duration: 60
 
     environment:
       java: 17
-      vars:
-        GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+
+    cache:
+      cache_paths:
+        - ~/.gradle/caches
+        - ~/.gradle/wrapper
 
     scripts:
-      - name: Show project files
-        script: ls -la
+      - name: Checkout
+        script: |
+          git clone $CM_REPO_URL .
+      
+      - name: Make gradlew executable
+        script: |
+          chmod +x ./gradlew
 
       - name: Setup local.properties
         script: |
           echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
 
-      - name: Ensure gradlew permission
-        script: |
-          if [ -f "./gradlew" ]; then
-            chmod +x gradlew
-          fi
-
       - name: Clean project
         script: |
-          if [ -f "./gradlew" ]; then
-            ./gradlew clean
-          else
-            echo "gradlew not found"
-            exit 1
-          fi
+          ./gradlew clean
 
       - name: Build Debug APK
         script: |
-          ./gradlew assembleDebug
+          ./gradlew assembleDebug --stacktrace
 
     artifacts:
-      - app/build/outputs/**/*.apk
-
-    publishing:
-      email:
-        recipients:
-          - prince.ar.abdur.rahman2008@gmail.com
+      - app/build/outputs/apk/debug/*.apk
