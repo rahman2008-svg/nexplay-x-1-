@@ -8,20 +8,27 @@ plugins {
 
 android {
   namespace = "com.aistudio.nexplayx"
-  compileSdk = 35
+
+  // 🔥 MUST FIX: compileSdk 36 (error fix)
+  compileSdk = 36
 
   defaultConfig {
     applicationId = "com.aistudio.nexplayx.mvpkzs"
     minSdk = 24
-    targetSdk = 35
+
+    // safe target
+    targetSdk = 36
+
     versionCode = 1
     versionName = "1.0"
+
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
 
   signingConfigs {
     create("release") {
       val keystorePath = System.getenv("KEYSTORE_PATH")
+
       if (!keystorePath.isNullOrBlank()) {
         storeFile = file(keystorePath)
         storePassword = System.getenv("STORE_PASSWORD")
@@ -41,13 +48,13 @@ android {
         "proguard-rules.pro"
       )
 
-      // SAFE fallback
       signingConfig = signingConfigs.findByName("release")
     }
 
     debug {
       isMinifyEnabled = false
-      // IMPORTANT: keep default Android debug signing (DON'T set null)
+
+      // 🔥 IMPORTANT FIX: default debug signing use করো
       signingConfig = signingConfigs.getByName("debug")
     }
   }
