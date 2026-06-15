@@ -1,0 +1,6 @@
+{
+  "name": "NexPlay X",
+  "description": "NexPlay X is an advanced offline smart music player featuring local media scanning, custom playlists, equalizer controls, a sleep timer, and personalized mood modes under the premium NexVora design language.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
