@@ -7,26 +7,22 @@ plugins {
 }
 
 android {
-  namespace = "com.example"
-  compileSdk = 36
+  namespace = "com.aistudio.nexplayx"
+  compileSdk = 35
 
   defaultConfig {
     applicationId = "com.aistudio.nexplayx.mvpkzs"
     minSdk = 24
-    targetSdk = 36
+    targetSdk = 35
     versionCode = 1
     versionName = "1.0"
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
 
-  // ❌ REMOVE custom debug keystore COMPLETELY
-  // ❌ REMOVE broken release keystore dependency
-
   signingConfigs {
-    // Only safe CI release signing (optional)
     create("release") {
       val keystorePath = System.getenv("KEYSTORE_PATH")
-      if (keystorePath != null) {
+      if (!keystorePath.isNullOrBlank()) {
         storeFile = file(keystorePath)
         storePassword = System.getenv("STORE_PASSWORD")
         keyAlias = System.getenv("KEY_ALIAS") ?: "upload"
@@ -39,19 +35,20 @@ android {
     release {
       isMinifyEnabled = false
       isCrunchPngs = false
+
       proguardFiles(
         getDefaultProguardFile("proguard-android-optimize.txt"),
         "proguard-rules.pro"
       )
 
-      // SAFE fallback: debug signing if no keystore
+      // SAFE fallback
       signingConfig = signingConfigs.findByName("release")
     }
 
     debug {
       isMinifyEnabled = false
-      // IMPORTANT: let Android use default debug keystore
-      signingConfig = null
+      // IMPORTANT: keep default Android debug signing (DON'T set null)
+      signingConfig = signingConfigs.getByName("debug")
     }
   }
 
@@ -72,7 +69,6 @@ android {
   }
 }
 
-// Secrets plugin
 secrets {
   propertiesFileName = ".env"
   defaultPropertiesFileName = ".env.example"
