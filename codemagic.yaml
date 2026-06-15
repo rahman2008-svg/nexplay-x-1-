@@ -1,19 +1,44 @@
 workflows:
   nexplay_x_build:
-    name: NexPlay X Build
+    name: NexPlay X Production Build
+    max_build_duration: 60
 
     environment:
       java: 17
+      vars:
+        GRADLE_OPTS: "-Dorg.gradle.daemon=false"
 
     scripts:
-      - name: Setup
-        script: echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
+      - name: Update system
+        script: |
+          apt-get update
 
-      - name: Make gradlew executable
-        script: chmod +x gradlew
+      - name: Install Gradle (fallback)
+        script: |
+          apt-get install -y gradle
 
-      - name: Build APK
-        script: ./gradlew assembleRelease
+      - name: Setup local.properties
+        script: |
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
+
+      - name: Check project files
+        script: |
+          ls -la
+
+      - name: Build project (safe mode)
+        script: |
+          if [ -f "./gradlew" ]; then
+            chmod +x gradlew
+            ./gradlew clean
+            ./gradlew assembleRelease
+          else
+            gradle assembleRelease
+          fi
 
     artifacts:
       - app/build/outputs/**/*.apk
+
+    publishing:
+      email:
+        recipients:
+          - prince.ar.abdur.rahman2008@gmail.com
