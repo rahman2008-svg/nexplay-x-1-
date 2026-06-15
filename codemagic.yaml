@@ -1,6 +1,6 @@
 workflows:
-  nexplay-x-debug:
-    name: NexPlay X Debug Build
+  nexplayx-debug-build:
+    name: NexPlay X Debug Build (FIXED)
     max_build_duration: 60
 
     environment:
@@ -12,21 +12,47 @@ workflows:
         - ~/.gradle/wrapper
 
     scripts:
-      - name: Make gradlew executable
-        script: |
-          chmod +x ./gradlew
-
-      - name: Setup local.properties
-        script: |
-          echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
+      - name: Fix permissions
+        script: chmod +x ./gradlew
 
       - name: Clean project
-        script: |
-          ./gradlew clean
+        script: ./gradlew clean
 
       - name: Build Debug APK
-        script: |
-          ./gradlew assembleDebug --stacktrace
+        script: ./gradlew assembleDebug --stacktrace
 
     artifacts:
       - app/build/outputs/apk/debug/*.apk
+
+
+  nexplayx-release-build:
+    name: NexPlay X Release Build (CI SAFE)
+    max_build_duration: 90
+
+    environment:
+      java: 17
+
+      # Optional: if you later add signing
+      vars:
+        KEYSTORE_PATH: ""
+        STORE_PASSWORD: ""
+        KEY_PASSWORD: ""
+        KEY_ALIAS: "upload"
+
+    cache:
+      cache_paths:
+        - ~/.gradle/caches
+        - ~/.gradle/wrapper
+
+    scripts:
+      - name: Fix permissions
+        script: chmod +x ./gradlew
+
+      - name: Clean project
+        script: ./gradlew clean
+
+      - name: Build Release (unsigned safe)
+        script: ./gradlew assembleRelease --stacktrace
+
+    artifacts:
+      - app/build/outputs/apk/release/*.apk
